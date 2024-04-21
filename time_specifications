@@ -1,0 +1,6 @@
+<time_specification> ::= <hour> [":" <minute>] [<am_pm>]
+<hour> ::= <digit> | "0" <digit> | "1" <digit> | "2" <digit_0_to_3>
+<minute> ::= "0" <digit> | "1" <digit> | "2" <digit> | "3" <digit> | "4" <digit> | "5" <digit>
+<am_pm> ::= "am" | "pm"
+<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<digit_0_to_3> ::= "0" | "1" | "2" | "3"
