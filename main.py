@@ -1,13 +1,14 @@
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
-grammar = """
+grammar = r"""
 time_specification = hour ":" minute am_pm
-hour = digit | "0" digit | "1" digit | "2" digit_0_to_3
-minute = "0" digit | "1" digit | "2" digit | "3" digit | "4" digit | "5" digit
-am_pm = "am" | "pm"
+hour = digit_0_to_1 digit / digit
+minute = digit_0_to_5 digit / digit
+am_pm = "am" / "pm"
 digit = "0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"
-digit_0_to_3 = "0" / "1" / "2" / "3"S
+digit_0_to_1 = "0" / "1"
+digit_0_to_5 = "0" / "1" / "2" / "3" / "4" / "5"
 """
 
 class TimeParser(NodeVisitor):
@@ -40,15 +41,15 @@ class TimeParser(NodeVisitor):
   def generic_visit(self, node, visited_children):
     return visited_children or node
 
-def parse(self):
-  grammar = Grammar(grammar)
-  tree = grammar.parse(self.text)
-  self.visit(tree)
-  return self.hour, self.minute, self.am_pm
+  def parse(self):
+    grammarOfGrammar = Grammar(grammar)
+    tree = grammarOfGrammar.parse(self.text)
+    self.visit(tree)
+    return self.hour, self.minute, self.am_pm
 
 def time_parser(text):
   parser = TimeParser(text)
-  hour, minute, am_pm = parser.parse(text)
+  hour, minute, am_pm = parser.parse()
   if am_pm == 'pm':
     hour += 12
   return hour * 60 + minute
