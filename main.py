@@ -1,55 +1,58 @@
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
-grammar = r"""
-time_specification = hour ":" minute am_pm
-hour = digit_0_to_1 digit / digit
-minute = digit_0_to_5 digit / digit
-am_pm = "am" / "pm"
-digit = "0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"
-digit_0_to_1 = "0" / "1"
-digit_0_to_5 = "0" / "1" / "2" / "3" / "4" / "5"
-"""
-
 class TimeParser(NodeVisitor):
-  def __init__(self, text):
-    self.text = text
-    self.hour = None
-    self.minute = None
-    self.am_pm = None
-
   def visit_time_specification(self, node, visited_children):
-    self.hour = visited_children[0]
-    self.minute = visited_children[2]
-    self.am_pm = visited_children[3]
+    if len(visited_children) == 1:
+      return visited_children[0]
+    elif len(visited_children) == 2:
+      return visited_children[0] + visited_children[1]
+    elif len(visited_children) == 3:
+      return visited_children[0] * 60 + visited_children[2]
+    else:
+      return visited_children[0] * 60 + visited_children[2]
 
   def visit_hour(self, node, visited_children):
-    return int(node.text)
+    if len(visited_children) == 1:
+      return visited_children[0]
+    elif len(visited_children) == 2:
+      return visited_children[0] * 10 + visited_children[1]
+    else:
+      return visited_children[0] * 100 + visited_children[1] * 10 + visited_children[2]
 
   def visit_minute(self, node, visited_children):
-    return int(node.text)
+    if len(visited_children) == 1:
+      return visited_children[0]
+    else:
+      return visited_children[0] * 10 + visited_children[1]
 
   def visit_am_pm(self, node, visited_children):
-    return node.text
+    return 0 if visited_children[0] == "am" else 12
 
   def visit_digit(self, node, visited_children):
-    return node.text
+    return int(node.text)
+
+  def visit_digit_0_to_1(self, node, visited_children):
+    return int(node.text)
 
   def visit_digit_0_to_3(self, node, visited_children):
-    return node.text
+    return int(node.text)
 
-  def generic_visit(self, node, visited_children):
-    return visited_children or node
+  def visit_digit_0_to_5(self, node, visited_children):
+    return int(node.text)
 
-  def parse(self):
-    grammarOfGrammar = Grammar(grammar)
-    tree = grammarOfGrammar.parse(self.text)
-    self.visit(tree)
-    return self.hour, self.minute, self.am_pm
-
-def time_parser(text):
-  parser = TimeParser(text)
-  hour, minute, am_pm = parser.parse()
-  if am_pm == 'pm':
-    hour += 12
-  return hour * 60 + minute
+def time_parser(time_specification):
+  grammar = Grammar(r"""
+    time_specification = hour / (hour am_pm) / (hour ":" minute) / (hour ":" minute am_pm)
+    hour = (digit_0_to_1 digit digit) / ("2" digit_0_to_3) / digit
+    minute = (digit_0_to_5 digit) / digit
+    am_pm = "am" / "pm"
+    digit = "0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"
+    digit_0_to_1 = "0" / "1"
+    digit_0_to_3 = "0" / "1" / "2" / "3"
+    digit_0_to_5 = "0" / "1" / "2" / "3" / "4" / "5"
+  """)
+  tree = grammar.parse(time_specification)
+  visited_children = TimeParser().visit(tree)
+  minutes_past_midnight = visited_children[0] * 60 + visited_children[1]
+  return minutes_past_midnight
