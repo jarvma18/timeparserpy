@@ -3,11 +3,15 @@ from parsimonious.nodes import NodeVisitor
 
 grammar = Grammar(
   """
-  time = (hour ":" minute am_pm) / (hour am_pm) / (hour  ":" minute) / hour
+  time = (hour ":" minute am_pm) / (hour_am_pm am_pm) / (hour  ":" minute) / hour
   hour = (digit_2 digit_0_3) / (digit_0_1 digit) / digit
+  hour_am_pm = digit_1 digit_0_2 / (digit_0 digit) / digit
   minute = digit_0_5 digit
   digit = ~"[0-9]"
+  digit_0 = "0"
+  digit_1 = "1"
   digit_0_1 = ~"[0-1]"
+  digit_0_2 = ~"[0-2]"
   digit_2 = "2"
   digit_0_3 = ~"[0-3]"
   digit_0_5 = ~"[0-5]"
