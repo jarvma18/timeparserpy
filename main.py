@@ -3,9 +3,8 @@ from parsimonious.nodes import NodeVisitor
 
 grammar = Grammar(
   """
-  time = (hour ":" minute am_pm) / (hour_am_pm am_pm) / (hour  ":" minute) / hour
+  time = (hour ":" minute am_pm) / (hour am_pm) / (hour  ":" minute) / hour
   hour = (digit_2 digit_0_3) / (digit_0_1 digit) / digit
-  hour_am_pm = digit_1 digit_0_2 / (digit_0 digit) / digit
   minute = digit_0_5 digit
   digit = ~"[0-9]"
   digit_0 = "0"
@@ -70,18 +69,20 @@ class TimeParser(NodeVisitor):
     self.visit(tree)
     return self.hour, self.minute, self.am_pm
 
+def get_minutes_past_midnight(hour: int, minute: int, am_pm: str) -> int:
+  minutes_past_midnight = None
+  if type(hour) == int:
+    minutes_past_midnight = hour * 60
+    if am_pm == 'pm':
+      minutes_past_midnight += 12 * 60
+    if type(minute) == int:
+      minutes_past_midnight += minute
+  return minutes_past_midnight
+
 def time_parser(text):
   parser = TimeParser(text)
-  minutesPastMidnight: int = None
   hour, minute, am_pm = parser.parse()
-  if type(hour) == int:
-    if type(am_pm) == str and am_pm == 'pm':
-      minutesPastMidnight = (hour + 12) * 60
-    else:
-      minutesPastMidnight = hour * 60
-  if type(minute) == int:
-    minutesPastMidnight += minute
-  return minutesPastMidnight
+  return get_minutes_past_midnight(hour, minute, am_pm)
 
 def main():
   time_parser('15')
