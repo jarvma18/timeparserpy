@@ -31,5 +31,10 @@ class TestTimeParser(unittest.TestCase):
     with self.assertRaises(IncompleteParseError):
       time_parser('10010101')
 
+  def test_get_minutes_past_midnight(self):
+    for i in range(0, 23):
+      for j in range(0, 59):
+        self.assertEqual(get_minutes_past_midnight(i, j), i * 60 + j)
+
 if __name__ == '__main__':
   unittest.main()
