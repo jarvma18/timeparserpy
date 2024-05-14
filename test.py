@@ -2,6 +2,7 @@ import unittest
 from parsimonious.exceptions import IncompleteParseError
 
 from main import time_parser
+from main import get_minutes_past_midnight
 
 class TestTimeParser(unittest.TestCase):
   def test_time_parser(self):
@@ -34,7 +35,7 @@ class TestTimeParser(unittest.TestCase):
   def test_get_minutes_past_midnight(self):
     for i in range(0, 23):
       for j in range(0, 59):
-        self.assertEqual(get_minutes_past_midnight(i, j), i * 60 + j)
+        self.assertEqual(get_minutes_past_midnight(i, j, ''), i * 60 + j)
 
 if __name__ == '__main__':
   unittest.main()
