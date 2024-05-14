@@ -7,3 +7,8 @@ This is small project where is minimal implementation of time specification pars
 * Implement the time parser using regular expressions
 
 ## How to run
+```
+# Run tests
+python3 -m unittest test.py
+
+```
