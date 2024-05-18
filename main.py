@@ -1,3 +1,4 @@
+import sys
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
@@ -33,48 +34,50 @@ class TimeParser(NodeVisitor):
       return
     if len(visited_children) > 0:
       self.hour = visited_children[0]
+    if len(visited_children) == 2:
+      self.am_pm = visited_children[1]
     if len(visited_children) > 2:
       self.minute = visited_children[2]
     if len(visited_children) > 3:
       self.am_pm = visited_children[3]
 
-  def visit_hour(self, node, visited_children):
+  def visit_hour(self, node, visited_children) -> int:
     return int(node.text)
 
-  def visit_hour_am_pm(self, node, visited_children):
+  def visit_hour_am_pm(self, node, visited_children) -> int:
     return int(node.text)
 
-  def visit_minute(self, node, visited_children):
+  def visit_minute(self, node, visited_children) -> int:
     return int(node.text)
 
-  def visit_am_pm(self, node, visited_children):
+  def visit_am_pm(self, node, visited_children) -> list:
     return node.text
 
-  def visit_digit(self, node, visited_children):
+  def visit_digit(self, node, visited_children) -> list:
     return node.text
 
-  def visit_digit_0_to_3(self, node, visited_children):
+  def visit_digit_0_to_3(self, node, visited_children) -> list:
     return node.text
 
-  def visit_digit_0_to_1(self, node, visited_children):
+  def visit_digit_0_to_1(self, node, visited_children) -> list:
     return node.text
 
-  def visit_digit_2(self, node, visited_children):
+  def visit_digit_2(self, node, visited_children) -> list:
     return node.text
 
-  def visit_digit_0_to_5(self, node, visited_children):
+  def visit_digit_0_to_5(self, node, visited_children) -> list:
     return node.text
 
-  def generic_visit(self, node, visited_children):
+  def generic_visit(self, node, visited_children) -> list:
     return visited_children or node
 
-  def parse(self):
+  def parse(self) -> tuple:
     tree = grammar.parse(self.text)
     self.visit(tree)
     return self.hour, self.minute, self.am_pm
 
 def get_minutes_past_midnight(hour: int, minute: int, am_pm: str) -> int:
-  minutes_past_midnight = None
+  minutes_past_midnight: int = None
   if type(hour) == int:
     minutes_past_midnight = hour * 60
     if am_pm == 'pm':
@@ -83,13 +86,18 @@ def get_minutes_past_midnight(hour: int, minute: int, am_pm: str) -> int:
       minutes_past_midnight += minute
   return minutes_past_midnight
 
-def time_parser(text):
+def time_parser(text) -> int:
   parser = TimeParser(text)
   hour, minute, am_pm = parser.parse()
   return get_minutes_past_midnight(hour, minute, am_pm)
 
 def main():
-  time_parser('15')
+  if len(sys.argv) > 1:
+    time = sys.argv[1]
+    minutes_past_midnight: int = time_parser(time)
+    print(f'Time: {time} is {minutes_past_midnight} minutes past midnight.')
+  else:
+    print('Please provide a time to parse.')
 
 if __name__ == "__main__":
   main()
