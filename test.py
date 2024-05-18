@@ -1,5 +1,6 @@
 import unittest
 from parsimonious.exceptions import IncompleteParseError
+from parsimonious.exceptions import ParseError
 
 from main import time_parser
 from main import get_minutes_past_midnight
@@ -27,6 +28,10 @@ class TestTimeParser(unittest.TestCase):
   def test_time_parser_should_not_parse_over_12_when_using_am_pm(self):
     with self.assertRaises(IncompleteParseError):
       time_parser('13:00am')
+
+  def test_time_parser_should_not_parse_over_12_when_using_am_pm(self):
+    with self.assertRaises(ParseError):
+      time_parser('lölölölöl')
 
   def test_time_parser_invalid(self):
     with self.assertRaises(IncompleteParseError):
