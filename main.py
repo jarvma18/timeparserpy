@@ -1,4 +1,5 @@
 import sys
+import re
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
@@ -91,10 +92,25 @@ def time_parser(text) -> int:
   hour, minute, am_pm = parser.parse()
   return get_minutes_past_midnight(hour, minute, am_pm)
 
+def regex_time_parser(text) -> int:
+  hour_pattern = r'([0-1]?[0-9]|2[0-3])'
+  minute_pattern = r'([0-5]?[0-9])'
+  am_pm_pattern = r'(am|pm)'
+  hour_match = rf'({hour_pattern})'
+  minute_match = rf'({minute_pattern})'
+  am_pm_match = rf'({am_pm_pattern})'
+  # continue here..
+  return None
+
 def main():
   if len(sys.argv) > 1:
-    time = sys.argv[1]
-    minutes_past_midnight: int = time_parser(time)
+    time: str = sys.argv[1]
+    parser: str = sys.argv[2]
+    if parser == 'regex':
+      print('Using regex parser.')
+    else:
+      print('Using parsimonious parser.')
+      minutes_past_midnight: int = time_parser(time)
     print(f'Time: {time} is {minutes_past_midnight} minutes past midnight.')
   else:
     print('Please provide a time to parse.')
