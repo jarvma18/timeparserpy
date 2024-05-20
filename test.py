@@ -4,6 +4,7 @@ from parsimonious.exceptions import ParseError
 
 from main import time_parser
 from main import get_minutes_past_midnight
+from main import regex_time_parser
 
 class TestTimeParser(unittest.TestCase):
   def test_time_parser(self):
@@ -78,6 +79,16 @@ class TestTimeParser(unittest.TestCase):
     for i in range(1, 12):
       for j in range(0, 59):
         self.assertEqual(get_minutes_past_midnight(i, j, 'pm'), i * 60 + j + 12 * 60)
+
+  def test_get_minutes_past_midnight_should_return_none(self):
+    self.assertEqual(get_minutes_past_midnight(None, None, None), None)
+
+  def test_regex_parser_should_return_tuple(self):
+    self.assertEqual(regex_time_parser('4'), (4, None, None))
+    self.assertEqual(regex_time_parser('7:38pm'), (19, 38, 'pm'))
+    self.assertEqual(regex_time_parser('23:42'), (23, 42, None))
+    self.assertEqual(regex_time_parser('3:16'), (3, 16, None))
+    self.assertEqual(regex_time_parser('3:16am'), (3, 16, 'am'))
 
 if __name__ == '__main__':
   unittest.main()
