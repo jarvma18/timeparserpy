@@ -93,14 +93,25 @@ def time_parser(text) -> int:
   return get_minutes_past_midnight(hour, minute, am_pm)
 
 def regex_time_parser(text) -> int:
-  hour_pattern = r'([0-1]?[0-9]|2[0-3])'
-  minute_pattern = r'([0-5]?[0-9])'
-  am_pm_pattern = r'(am|pm)'
-  hour_match = rf'({hour_pattern})'
-  minute_match = rf'({minute_pattern})'
-  am_pm_match = rf'({am_pm_pattern})'
-  # continue here..
-  return None
+  hour_pattern = '^(2[0-3])|([0-1]?[0-9])'
+  minute_pattern = '[0-5]?[0-9]'
+  am_pm_pattern = 'am|pm'
+  hour_search = re.search(hour_pattern, text)
+  minute_search = re.search(minute_pattern, text)
+  am_pm_search = re.search(am_pm_pattern, text)
+  hour = None
+  minute = None
+  am_pm = None
+  if hour_search != None:
+    hour = int(hour_search.group(0))
+  if minute_search != None:
+    minute = int(minute_search.group(0))
+  if am_pm_search != None:
+    am_pm = am_pm_search.group(0)
+  if hour > 12 and (am_pm == 'pm' or am_pm == 'am'):
+    print('Invalid time.')
+    return
+  return (hour, minute, am_pm)
 
 def main():
   if len(sys.argv) > 1:
