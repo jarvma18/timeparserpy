@@ -94,7 +94,7 @@ def time_parser(text) -> int:
 
 def regex_time_parser(text) -> int:
   hour_pattern = '^(2[0-3])|([0-1]?[0-9])'
-  minute_pattern = '[0-5]?[0-9]'
+  minute_pattern = ':[0-5]?[0-9]'
   am_pm_pattern = 'am|pm'
   hour_search = re.search(hour_pattern, text)
   minute_search = re.search(minute_pattern, text)
@@ -105,7 +105,7 @@ def regex_time_parser(text) -> int:
   if hour_search != None:
     hour = int(hour_search.group(0))
   if minute_search != None:
-    minute = int(minute_search.group(0))
+    minute = int(minute_search.group(0).replace(':', ''))
   if am_pm_search != None:
     am_pm = am_pm_search.group(0)
   if hour > 12 and (am_pm == 'pm' or am_pm == 'am'):
