@@ -87,27 +87,37 @@ def get_minutes_past_midnight(hour: int, minute: int, am_pm: str) -> int:
       minutes_past_midnight += minute
   return minutes_past_midnight
 
-def time_parser(text) -> int:
+def time_parser(text: str) -> int:
   parser = TimeParser(text)
   hour, minute, am_pm = parser.parse()
   return get_minutes_past_midnight(hour, minute, am_pm)
 
+def get_value_from_search_groups(hour, minute, am_pm) -> tuple:
+  hour: str = hour.group(0)
+  minute: str = minute.group(0)
+  am_pm: str = am_pm.group(0)
+  if hour != None:
+    hour = cast_to_int(hour)
+  if minute != None:
+    minute = cast_to_int(minute)
+  if am_pm != None:
+    am_pm = replace_character_with_empty(am_pm, ':')
+  return hour, minute, am_pm
+
+def cast_to_int(value: str) -> int:
+  return int(value)
+
+def replace_character_with_empty(value: str, character: str) -> str:
+  return value.replace(character, '')
+
 def regex_time_parser(text) -> int:
   hour_pattern = '^(2[0-3])|([0-1]?[0-9])'
   minute_pattern = ':[0-5]?[0-9]'
-  am_pm_pattern = 'am|pm'
+  am_pm_pattern = 'am$|pm$'
   hour_search = re.search(hour_pattern, text)
   minute_search = re.search(minute_pattern, text)
   am_pm_search = re.search(am_pm_pattern, text)
-  hour = None
-  minute = None
-  am_pm = None
-  if hour_search != None:
-    hour = int(hour_search.group(0))
-  if minute_search != None:
-    minute = int(minute_search.group(0).replace(':', ''))
-  if am_pm_search != None:
-    am_pm = am_pm_search.group(0)
+  hour, minute, am_pm = get_value_from_search_groups(hour_search, minute_search, am_pm_search)
   if hour > 12 and (am_pm == 'pm' or am_pm == 'am'):
     print('Invalid time.')
     return
