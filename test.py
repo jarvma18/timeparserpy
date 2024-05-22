@@ -90,5 +90,20 @@ class TestTimeParser(unittest.TestCase):
     self.assertEqual(regex_time_parser('3:16'), (3, 16, None))
     self.assertEqual(regex_time_parser('3:16am'), (3, 16, 'am'))
 
+  def test_re_search_should_return_search_group(self):
+    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '23'), '23')
+    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '12'), '12')
+    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '0'), '0')
+    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '9'), '9')
+
+  def test_get_value_from_search_group(self):
+    self.assertEqual(get_value_from_search_group(None), None)
+
+  def test_re_search_should_return_none(self):
+    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '24'), None)
+    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '25'), None)
+    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '100'), None)
+    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '101'), None)
+
 if __name__ == '__main__':
   unittest.main()
