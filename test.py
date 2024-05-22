@@ -85,7 +85,7 @@ class TestTimeParser(unittest.TestCase):
 
   def test_regex_parser_should_return_tuple(self):
     self.assertEqual(regex_time_parser('4'), (4, None, None))
-    self.assertEqual(regex_time_parser('7:38pm'), (19, 38, 'pm'))
+    self.assertEqual(regex_time_parser('7:38pm'), (7, 38, 'pm'))
     self.assertEqual(regex_time_parser('23:42'), (23, 42, None))
     self.assertEqual(regex_time_parser('3:16'), (3, 16, None))
     self.assertEqual(regex_time_parser('3:16am'), (3, 16, 'am'))
