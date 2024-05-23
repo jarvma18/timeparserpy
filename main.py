@@ -93,14 +93,15 @@ def time_parser(text: str) -> int:
   return get_minutes_past_midnight(hour, minute, am_pm)
 
 def get_value_from_search_groups(hour, minute, am_pm) -> tuple:
-  hour: str = hour.group(0)
-  minute: str = minute.group(0)
-  am_pm: str = am_pm.group(0)
   if hour != None:
+    hour = hour.group(0)
     hour = cast_to_int(hour)
   if minute != None:
+    minute = minute.group(0)
+    minute = replace_character_with_empty(minute, ':')
     minute = cast_to_int(minute)
   if am_pm != None:
+    am_pm = am_pm.group(0)
     am_pm = replace_character_with_empty(am_pm, ':')
   return hour, minute, am_pm
 
