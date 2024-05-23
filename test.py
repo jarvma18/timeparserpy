@@ -1,3 +1,4 @@
+import re
 import unittest
 from parsimonious.exceptions import IncompleteParseError
 from parsimonious.exceptions import ParseError
@@ -5,6 +6,9 @@ from parsimonious.exceptions import ParseError
 from main import time_parser
 from main import get_minutes_past_midnight
 from main import regex_time_parser
+from main import get_value_from_search_groups
+from main import cast_to_int
+from main import replace_character_with_empty
 
 class TestTimeParser(unittest.TestCase):
   def test_time_parser(self):
@@ -90,20 +94,32 @@ class TestTimeParser(unittest.TestCase):
     self.assertEqual(regex_time_parser('3:16'), (3, 16, None))
     self.assertEqual(regex_time_parser('3:16am'), (3, 16, 'am'))
 
-  def test_re_search_should_return_search_group(self):
-    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '23'), '23')
-    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '12'), '12')
-    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '0'), '0')
-    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '9'), '9')
+  def test_get_value_from_search_groups_should_return_search_group(self):
+    hour_pattern: str = '^(2[0-3])|([0-1]?[0-9])'
+    minute_pattern: str = ':[0-5]?[0-9]'
+    am_pm_pattern: str = 'am$|pm$'
+    def get_mock_search_group(text: str, pattern: str):
+      return re.search(pattern, text)
+    self.assertEqual(get_value_from_search_groups(None, None, None), (None, None, None))
+    self.assertEqual(get_value_from_search_groups(get_mock_search_group('4', hour_pattern), None, None), (4, None, None))
+    self.assertEqual(get_value_from_search_groups(None, get_mock_search_group(':07', minute_pattern), None), (None, 7, None))
+    self.assertEqual(get_value_from_search_groups(None, None, get_mock_search_group('pm', am_pm_pattern)), (None, None, 'pm'))
+    self.assertEqual(get_value_from_search_groups(
+      get_mock_search_group('4', hour_pattern),
+      get_mock_search_group(':07', minute_pattern),
+      get_mock_search_group('am', am_pm_pattern)),
+      (4, 7, 'am'))
 
-  def test_get_value_from_search_group(self):
-    self.assertEqual(get_value_from_search_group(None), None)
+  def test_cast_to_int(self):
+    self.assertEqual(cast_to_int('4'), 4)
+    self.assertEqual(cast_to_int('7'), 7)
+    self.assertEqual(cast_to_int('42'), 42)
 
-  def test_re_search_should_return_none(self):
-    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '24'), None)
-    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '25'), None)
-    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '100'), None)
-    self.assertEqual(re_search('^(2[0-3])|([0-1]?[0-9])', '101'), None)
+  def test_replace_character_with_empty(self):
+    self.assertEqual(replace_character_with_empty('4:', ':'), '4')
+    self.assertEqual(replace_character_with_empty('7;', ';'), '7')
+    self.assertEqual(replace_character_with_empty('42.', '.'), '42')
+    self.assertEqual(replace_character_with_empty('11.', ':'), '11.')
 
 if __name__ == '__main__':
   unittest.main()
