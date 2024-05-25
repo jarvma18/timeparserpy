@@ -9,6 +9,7 @@ from main import regex_time_parser
 from main import get_value_from_search_groups
 from main import cast_to_int
 from main import replace_character_with_empty
+from main import is_valid_user_arguments
 
 class TestTimeParser(unittest.TestCase):
   def test_time_parser(self):
@@ -120,6 +121,51 @@ class TestTimeParser(unittest.TestCase):
     self.assertEqual(replace_character_with_empty('7;', ';'), '7')
     self.assertEqual(replace_character_with_empty('42.', '.'), '42')
     self.assertEqual(replace_character_with_empty('11.', ':'), '11.')
+
+  def test_all_user_arguments_are_provided(self):
+    good_args: list = ['main.py', '23:12', 'parser']
+    bad_args: list = ['main.py']
+    self.assertEqual(is_valid_user_arguments(good_args), True)
+    self.assertEqual(is_valid_user_arguments(bad_args), False)
+
+  def test_hour_and_minute_regex(self):
+    for i in range(0, 23):
+      for j in range(0, 59):
+        self.assertEqual(regex_time_parser(f'{i}:{j}'), (i, j, None))
+
+  def test_single_hour_regex(self):
+    for i in range(0, 23):
+      self.assertEqual(regex_time_parser(f'{i}'), (i, None, None))
+
+  def test_single_hour_am_regex(self):
+    for i in range(1, 12):
+      self.assertEqual(regex_time_parser(f'{i}am'), (i, None, 'am'))
+
+  def test_get_single_hour_pm_regex(self):
+    for i in range(1, 12):
+      self.assertEqual(regex_time_parser(f'{i}pm'), (i, None, 'pm'))
+
+  def test_hour_and_minute_am_regex(self):
+    for i in range(1, 12):
+      for j in range(0, 59):
+        self.assertEqual(regex_time_parser(f'{i}:{j}am'), (i, j, 'am'))
+
+  def test_hour_and_minute_pm_regex(self):
+    for i in range(1, 12):
+      for j in range(0, 59):
+        self.assertEqual(regex_time_parser(f'{i}:{j}pm'), (i, j, 'pm'))
+
+  def test_time_parser_should_not_parse_over_12_when_using_am_pm(self):
+    with self.assertRaises(IncompleteParseError):
+      regex_time_parser('13:00am')
+
+  def test_time_parser_rise_parse_error(self):
+    with self.assertRaises(ParseError):
+      regex_time_parser('lölölölöl')
+
+  def test_time_parser_raisa_incomplete_parse_error(self):
+    with self.assertRaises(IncompleteParseError):
+      regex_time_parser('10010101')
 
 if __name__ == '__main__':
   unittest.main()
