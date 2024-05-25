@@ -124,18 +124,26 @@ def regex_time_parser(text) -> int:
     return
   return (hour, minute, am_pm)
 
+def is_valid_user_arguments(args: list) -> bool:
+  if len(args) > 2:
+    return True
+  else:
+    return False
+
 def main():
-  if len(sys.argv) > 1:
+  if is_valid_user_arguments(sys.argv):
     time: str = sys.argv[1]
     parser: str = sys.argv[2]
     if parser == 'regex':
       print('Using regex parser.')
+      hour, minute, am_pm = regex_time_parser(time)
+      minutes_past_midnight: int = get_minutes_past_midnight(hour, minute, am_pm)
     else:
       print('Using parsimonious parser.')
       minutes_past_midnight: int = time_parser(time)
     print(f'Time: {time} is {minutes_past_midnight} minutes past midnight.')
   else:
-    print('Please provide a time to parse.')
+    print('Please provide a time and parser: <time> <parser>')
 
 if __name__ == "__main__":
   main()
