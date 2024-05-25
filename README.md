@@ -11,6 +11,14 @@ This is small project where is minimal implementation of time specification pars
 # Run tests
 python3 -m unittest test.py
 
-# Parse time 20:10
-python3 main.py 20:10
+# Run program
+python3 main.py <time> <parser>
+
+# Examples
+python3 main.py 20:10 regex
+python3 main.py 20 regex
+python3 main.py 8pm regex
+python3 main.py 20:10 parser
+python3 main.py 20 parser
+python3 main.py 8pm parser
 ```
