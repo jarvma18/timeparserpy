@@ -95,6 +95,9 @@ def time_parser(text: str) -> int:
 def get_value_from_search_groups(hour, minute, am_pm) -> tuple:
   if hour != None:
     hour = hour.group(0)
+    hour = replace_character_with_empty(hour, ':')
+    hour = replace_character_with_empty(hour, 'am')
+    hour = replace_character_with_empty(hour, 'pm')
     hour = cast_to_int(hour)
   if minute != None:
     minute = minute.group(0)
@@ -112,35 +115,42 @@ def replace_character_with_empty(value: str, character: str) -> str:
   return value.replace(character, '')
 
 def regex_time_parser(text) -> int:
-  hour_pattern = '^(2[0-3])|([0-1]?[0-9])'
+  hour_pattern = '^((2[0-3])|([0-1]?[0-9]))(:|am|pm|$)'
   minute_pattern = ':[0-5]?[0-9]'
   am_pm_pattern = 'am$|pm$'
   hour_search = re.search(hour_pattern, text)
   minute_search = re.search(minute_pattern, text)
   am_pm_search = re.search(am_pm_pattern, text)
   hour, minute, am_pm = get_value_from_search_groups(hour_search, minute_search, am_pm_search)
+  print(text, hour, minute, am_pm)
+  if hour == None:
+    raise Exception('Invalid time.')
   if hour > 12 and (am_pm == 'pm' or am_pm == 'am'):
-    print('Invalid time.')
-    return
+    raise Exception('Invalid time.')
   return (hour, minute, am_pm)
 
 def is_valid_user_arguments(args: list) -> bool:
   if len(args) > 2:
-    return True
+    if args[2] == 'regex' or args[2] == 'parsimonious':
+      return True
+    return False
   else:
     return False
+
+def parse_time_and_return_minutes_past_midnight(parser, time) -> int:
+  if parser == 'regex':
+    print('Using regex parser.')
+    hour, minute, am_pm = regex_time_parser(time)
+    return get_minutes_past_midnight(hour, minute, am_pm)
+  elif parser == 'parsimonious':
+    print('Using parsimonious parser.')
+    return time_parser(time)
 
 def main():
   if is_valid_user_arguments(sys.argv):
     time: str = sys.argv[1]
     parser: str = sys.argv[2]
-    if parser == 'regex':
-      print('Using regex parser.')
-      hour, minute, am_pm = regex_time_parser(time)
-      minutes_past_midnight: int = get_minutes_past_midnight(hour, minute, am_pm)
-    else:
-      print('Using parsimonious parser.')
-      minutes_past_midnight: int = time_parser(time)
+    minutes_past_midnight = parse_time_and_return_minutes_past_midnight(parser, time)
     print(f'Time: {time} is {minutes_past_midnight} minutes past midnight.')
   else:
     print('Please provide a time and parser: <time> <parser>')
