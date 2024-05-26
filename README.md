@@ -12,15 +12,27 @@ This is small project where is minimal implementation of time specification pars
 python3 -m unittest test.py
 
 # Run program
-python3 main.py <time> <parser>
+python3 main.py <time> <parser> <time_or_minutes_past_midnight>
 
 # Examples
-python3 main.py 20:10 regex
-python3 main.py 20 regex
-python3 main.py 8pm regex
-python3 main.py 8:10pm regex
-python3 main.py 20:10 parser
-python3 main.py 20 parser
-python3 main.py 8pm parser
-python3 main.py 8:10pm parser
+
+# Hour, minutes, am or pm
+python3 main.py 20:10 regex time
+python3 main.py 20 regex time
+python3 main.py 8pm regex time
+python3 main.py 8:10pm regex time
+python3 main.py 20:10 parsimonious time
+python3 main.py 20 parsimonious time
+python3 main.py 8pm parsimonious time
+python3 main.py 8:10pm parsimonious time
+
+# Minutes past midnight
+python3 main.py 20:10 regex minutes_past_midnight
+python3 main.py 20 regex minutes_past_midnight
+python3 main.py 8pm regex minutes_past_midnight
+python3 main.py 8:10pm regex minutes_past_midnight
+python3 main.py 20:10 parsimonious minutes_past_midnight
+python3 main.py 20 parsimonious minutes_past_midnight
+python3 main.py 8pm parsimonious minutes_past_midnight
+python3 main.py 8:10pm parsimonious minutes_past_midnight
 ```
