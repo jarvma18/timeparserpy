@@ -18,7 +18,9 @@ python3 main.py <time> <parser>
 python3 main.py 20:10 regex
 python3 main.py 20 regex
 python3 main.py 8pm regex
+python3 main.py 8:10pm regex
 python3 main.py 20:10 parser
 python3 main.py 20 parser
 python3 main.py 8pm parser
+python3 main.py 8:10pm parser
 ```
