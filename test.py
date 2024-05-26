@@ -3,13 +3,14 @@ import unittest
 from parsimonious.exceptions import IncompleteParseError
 from parsimonious.exceptions import ParseError
 
-from peg_time_parser import time_parser
 from main import get_minutes_past_midnight
+from main import is_valid_user_arguments
+from main import get_time_or_minutes_past_midnight
+from peg_time_parser import time_parser
 from regex_time_parser import regex_time_parser
 from regex_time_parser import get_value_from_search_groups
 from regex_time_parser import cast_to_int
 from regex_time_parser import replace_character_with_empty
-from main import is_valid_user_arguments
 
 class TestTimeParser(unittest.TestCase):
   def test_time_parser(self):
@@ -175,6 +176,10 @@ class TestTimeParser(unittest.TestCase):
     with self.assertRaises(Exception) as context:
       regex_time_parser('10010101')
     self.assertTrue('Invalid time.' in str(context.exception))
+
+  def test_get_time_or_minutes_past_midnight(self):
+    self.assertEqual(get_time_or_minutes_past_midnight('time', 4, 7, 'pm'), (4, 7, 'pm'))
+    self.assertEqual(get_time_or_minutes_past_midnight('minutes_past_midnight', 4, 7, 'pm'), 4 * 60 + 7 + 12 * 60)
 
 if __name__ == '__main__':
   unittest.main()
