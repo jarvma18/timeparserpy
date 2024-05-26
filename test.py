@@ -3,48 +3,48 @@ import unittest
 from parsimonious.exceptions import IncompleteParseError
 from parsimonious.exceptions import ParseError
 
-from main import time_parser
+from peg_time_parser import time_parser
 from main import get_minutes_past_midnight
-from main import regex_time_parser
-from main import get_value_from_search_groups
-from main import cast_to_int
-from main import replace_character_with_empty
+from regex_time_parser import regex_time_parser
+from regex_time_parser import get_value_from_search_groups
+from regex_time_parser import cast_to_int
+from regex_time_parser import replace_character_with_empty
 from main import is_valid_user_arguments
 
 class TestTimeParser(unittest.TestCase):
   def test_time_parser(self):
-    self.assertEqual(time_parser('4'), 4 * 60)
-    self.assertEqual(time_parser('7:38pm'), 19 * 60 + 38)
-    self.assertEqual(time_parser('23:42'), 23 * 60 + 42)
-    self.assertEqual(time_parser('3:16'), 3 * 60 + 16)
-    self.assertEqual(time_parser('3:16am'), 3 * 60 + 16)
+    self.assertEqual(time_parser('4'), (4, None, None))
+    self.assertEqual(time_parser('7:38pm'), (7, 38, 'pm'))
+    self.assertEqual(time_parser('23:42'), (23, 42, None))
+    self.assertEqual(time_parser('3:16'), (3, 16, None))
+    self.assertEqual(time_parser('3:16am'), (3, 16, 'am'))
 
   def test_time_parser_single_hour(self):
     for i in range(1, 23):
-      self.assertEqual(time_parser(str(i)), i * 60)
+      self.assertEqual(time_parser(str(i)), (i, None, None))
 
   def test_time_parser_hour_and_minute(self):
     for i in range(1, 23):
       for j in range(1, 59):
         if j < 10:
-          self.assertEqual(time_parser(f'{i}:0{j}'), i * 60 + j)
+          self.assertEqual(time_parser(f'{i}:0{j}'), (i, j, None))
         else:
-          self.assertEqual(time_parser(f'{i}:{j}'), i * 60 + j)
+          self.assertEqual(time_parser(f'{i}:{j}'), (i, j, None))
 
   def test_time_parser_single_hour_am_pm(self):
     for i in range(1, 12):
-      self.assertEqual(time_parser(f'{i}am'), i * 60)
-      self.assertEqual(time_parser(f'{i}pm'), i * 60 + 12 * 60)
+      self.assertEqual(time_parser(f'{i}am'), (i, None, 'am'))
+      self.assertEqual(time_parser(f'{i}pm'), (i, None, 'pm'))
 
   def test_time_parser_hour_and_minute_am_pm(self):
     for i in range(1, 12):
       for j in range(1, 59):
         if j < 10:
-          self.assertEqual(time_parser(f'{i}:0{j}am'), i * 60 + j)
-          self.assertEqual(time_parser(f'{i}:0{j}pm'), i * 60 + j + 12 * 60)
+          self.assertEqual(time_parser(f'{i}:0{j}am'), (i, j, 'am'))
+          self.assertEqual(time_parser(f'{i}:0{j}pm'), (i, j, 'pm'))
         else:
-          self.assertEqual(time_parser(f'{i}:{j}am'), i * 60 + j)
-          self.assertEqual(time_parser(f'{i}:{j}pm'), i * 60 + j + 12 * 60)
+          self.assertEqual(time_parser(f'{i}:{j}am'), (i, j, 'am'))
+          self.assertEqual(time_parser(f'{i}:{j}pm'), (i, j, 'pm'))
 
   def test_time_parser_should_not_parse_over_12_when_using_am_pm(self):
     with self.assertRaises(IncompleteParseError):
