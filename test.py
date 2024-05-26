@@ -123,10 +123,14 @@ class TestTimeParser(unittest.TestCase):
     self.assertEqual(replace_character_with_empty('11.', ':'), '11.')
 
   def test_all_user_arguments_are_provided(self):
-    good_args: list = ['main.py', '23:12', 'parser']
-    bad_args: list = ['main.py']
-    self.assertEqual(is_valid_user_arguments(good_args), True)
-    self.assertEqual(is_valid_user_arguments(bad_args), False)
+    good_args1: list = ['main.py', '23:12', 'parsimonious']
+    good_args2: list = ['main.py', '23:12', 'regex']
+    bad_args1: list = ['main.py']
+    bad_args2: list = ['main.py', '23:12', 'unknown_parser']
+    self.assertEqual(is_valid_user_arguments(good_args1), True)
+    self.assertEqual(is_valid_user_arguments(good_args2), True)
+    self.assertEqual(is_valid_user_arguments(bad_args1), False)
+    self.assertEqual(is_valid_user_arguments(bad_args2), False)
 
   def test_hour_and_minute_regex(self):
     for i in range(0, 23):
@@ -156,16 +160,19 @@ class TestTimeParser(unittest.TestCase):
         self.assertEqual(regex_time_parser(f'{i}:{j}pm'), (i, j, 'pm'))
 
   def test_time_parser_should_not_parse_over_12_when_using_am_pm(self):
-    with self.assertRaises(IncompleteParseError):
+    with self.assertRaises(Exception) as context:
       regex_time_parser('13:00am')
+    self.assertTrue('Invalid time.' in str(context.exception))
 
   def test_time_parser_rise_parse_error(self):
-    with self.assertRaises(ParseError):
+    with self.assertRaises(Exception) as context:
       regex_time_parser('lölölölöl')
+    self.assertTrue('Invalid time.' in str(context.exception))
 
-  def test_time_parser_raisa_incomplete_parse_error(self):
-    with self.assertRaises(IncompleteParseError):
+  def test_time_parser_rise_incomplete_parse_error(self):
+    with self.assertRaises(Exception) as context:
       regex_time_parser('10010101')
+    self.assertTrue('Invalid time.' in str(context.exception))
 
 if __name__ == '__main__':
   unittest.main()
