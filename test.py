@@ -123,14 +123,16 @@ class TestTimeParser(unittest.TestCase):
     self.assertEqual(replace_character_with_empty('11.', ':'), '11.')
 
   def test_all_user_arguments_are_provided(self):
-    good_args1: list = ['main.py', '23:12', 'parsimonious']
-    good_args2: list = ['main.py', '23:12', 'regex']
+    good_args1: list = ['main.py', '23:12', 'parsimonious', 'time']
+    good_args2: list = ['main.py', '23:12', 'regex', 'minutes_past_midnight']
     bad_args1: list = ['main.py']
-    bad_args2: list = ['main.py', '23:12', 'unknown_parser']
+    bad_args2: list = ['main.py', '23:12', 'unknown_parser', 'unknown_something']
+    bad_args3: list = ['main.py', '23:12', 'unknown_parser', 'time']
     self.assertEqual(is_valid_user_arguments(good_args1), True)
     self.assertEqual(is_valid_user_arguments(good_args2), True)
     self.assertEqual(is_valid_user_arguments(bad_args1), False)
     self.assertEqual(is_valid_user_arguments(bad_args2), False)
+    self.assertEqual(is_valid_user_arguments(bad_args3), False)
 
   def test_hour_and_minute_regex(self):
     for i in range(0, 23):
